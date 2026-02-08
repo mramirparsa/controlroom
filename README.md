@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ControlRoom
 
-## Getting Started
+Executive-grade control center for users, projects, tasks, billing, and reports. Built with Next.js App Router, TailwindCSS, shadcn/ui, React Query, and a production-like mock API powered by MSW + IndexedDB.
 
-First, run the development server:
+## 👨‍💻 Author
+
+**Amirhossein Shasti**
+
+- 🌐 Website: [amirshasti.ir](https://amirshasti.ir)
+- 🐙 GitHub: [@mramirparsa](https://github.com/mramirparsa)
+- 📱 Telegram: [@mramirparsa](https://t.me/mramirparsa)
+- 📸 Instagram: [@\_\_Amirhossein1999](https://instagram.com/__Amirhossein1999)
+
+## Features
+
+- App Router + TypeScript + TailwindCSS (shadcn/ui)
+- Auth flows (login, register, forgot/reset), RBAC-aware routes
+- Users, projects, tasks (kanban + list), billing, reports, and settings
+- MSW + IndexedDB for realistic API behavior and persistence
+- React Query data layer, React Hook Form + Zod validation
+- Recharts dashboards and CSV export for invoices
+
+## Routes
+
+- Public: /login, /register, /forgot-password, /reset-password
+- Protected: /dashboard, /users, /users/new, /users/[id]
+- Protected: /projects, /projects/new, /projects/[id], /projects/[id]/tasks
+- Protected: /tasks, /billing, /billing/invoices, /billing/invoices/[id]
+- Protected: /reports, /settings, /settings/profile, /settings/security, /settings/organization
+- Status: /403, /404, /500
+
+## Getting started
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+## Demo credentials
+
+- **Email:** mr.amirr.1998@gmail.com
+- **Password:** Password123!
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
+npm run lint
+npm run format
+npm run test
+npm run test:watch
+npm run test:e2e
+npm run test:e2e:ui
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tests
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Unit/integration: Jest + React Testing Library
+- E2E: Playwright (Chromium)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If Playwright browsers are missing, run:
 
-## Learn More
+```bash
+npx playwright install
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Mock data and seeding
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Users are generated with Faker and stored in IndexedDB.
+- Passwords default to Password123! unless changed through reset flow.
+- Data persists across reloads (clear site data to reset).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
+- The mock API is enforced by MSW handlers in the browser.
+- RBAC is enforced in handlers for users, projects, tasks, and invoices.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Mock API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app uses MSW handlers and IndexedDB to simulate backend behavior in the browser. Data persists across reloads.
+
+## Tech stack
+
+- Next.js 16 (App Router)
+- React 19, TypeScript
+- TailwindCSS v4 + shadcn/ui
+- React Query, Zustand
+- React Hook Form + Zod
+- MSW + IndexedDB (idb-keyval)
+- Recharts, Sonner
+
+## License
+
+MIT © [Amirhossein Shasti](https://github.com/mramirparsa)
