@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -25,10 +25,16 @@ const schema = z
 
 type FormValues = z.infer<typeof schema>;
 
-export default function ResetPasswordPage() {
-  const router = useRouter();
+function TokenHandler({ onToken }: { onToken: (token: string | null) => void }) {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  onToken(token);
+  return null;
+}
+
+export default function ResetPasswordPage() {
+  const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -64,6 +70,9 @@ export default function ResetPasswordPage() {
 
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      <Suspense fallback={<p>Loading...</p>}>
+        <TokenHandler onToken={setToken} />
+      </Suspense>
       <div className="mx-auto flex min-h-screen w-full max-w-xl items-center justify-center px-6">
         <Card className="border-white/10 bg-white/5 text-white shadow-2xl">
           <CardHeader>
