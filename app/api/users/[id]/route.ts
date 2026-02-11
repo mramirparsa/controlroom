@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import type { User } from "@/shared/types/models";
 import { findUserById, updateUser } from "@/app/api/users/store";
 
@@ -37,11 +37,12 @@ const requireAdmin = (request: Request) => {
   return null;
 };
 
-export async function GET(request: Request, context: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const authError = requireAdmin(request);
   if (authError) return authError;
 
-  const user = findUserById(context.params.id);
+  const { id } = await context.params;
+  const user = findUserById(id);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
@@ -49,7 +50,7 @@ export async function GET(request: Request, context: { params: { id: string } })
   return NextResponse.json({ user });
 }
 
-export async function PATCH(request: Request, context: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const authError = requireAdmin(request);
   if (authError) return authError;
 
@@ -58,7 +59,8 @@ export async function PATCH(request: Request, context: { params: { id: string } 
     return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
   }
 
-  const user = updateUser(context.params.id, patch);
+  const { id } = await context.params;
+  const user = updateUser(id, patch);
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
