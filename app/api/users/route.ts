@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import type { Role, User, UserStatus } from "@/shared/types/models";
 import { createUser, listUsers } from "@/app/api/users/store";
+
+export const dynamic = "force-dynamic";
 
 type SessionPayload = {
   token: string;
@@ -14,18 +17,20 @@ type SessionPayload = {
   };
 };
 
-const getSessionUser = (request: Request) => {
-  const cookie = request.headers.get("cookie") ?? "";
-  const match = cookie.match(/controlroom_session=([^;]+)/);
-  if (!match?.[1]) return null;
+const getSessionUser = () => {
+  const value = cookies().get("controlroom_session")?.value;
+  if (!value) return null;
 
-  const raw = decodeURIComponent(match[1]);
-  const session = JSON.parse(raw) as SessionPayload;
-  return session?.user ?? null;
+  try {
+    const session = JSON.parse(value) as SessionPayload;
+    return session?.user ?? null;
+  } catch {
+    return null;
+  }
 };
 
-const requireAdmin = (request: Request) => {
-  const user = getSessionUser(request);
+const requireAdmin = () => {
+  const user = getSessionUser();
   if (!user) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
@@ -38,7 +43,7 @@ const requireAdmin = (request: Request) => {
 };
 
 export async function GET(request: Request) {
-  const authError = requireAdmin(request);
+  const authError = requireAdmin();
   if (authError) return authError;
 
   const url = new URL(request.url);
@@ -60,7 +65,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const authError = requireAdmin(request);
+  const authError = requireAdmin();
   if (authError) return authError;
 
   const body = (await request.json().catch(() => null)) as Omit<User, "id" | "createdAt"> | null;
