@@ -17,8 +17,9 @@ type SessionPayload = {
   };
 };
 
-const getSessionUser = () => {
-  const value = cookies().get("controlroom_session")?.value;
+const getSessionUser = async () => {
+  const store = await cookies();
+  const value = store.get("controlroom_session")?.value;
   if (!value) return null;
 
   try {
@@ -29,8 +30,8 @@ const getSessionUser = () => {
   }
 };
 
-const requireAdmin = () => {
-  const user = getSessionUser();
+const requireAdmin = async () => {
+  const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
@@ -43,7 +44,7 @@ const requireAdmin = () => {
 };
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const authError = requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
 
   const { id } = await context.params;
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 }
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const authError = requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
 
   const patch = (await request.json().catch(() => null)) as Partial<User> | null;
